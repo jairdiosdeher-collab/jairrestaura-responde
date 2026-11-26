@@ -9,10 +9,13 @@ export type AccompanimentStyle =
 
 export type LanguageDepth = 'auto' | 'claro' | 'profundo' | 'breve';
 
+export type ThemePreference = 'light' | 'dark' | 'system';
+
 export interface AccompanimentSettings {
   preferredStyle: AccompanimentStyle;
   languageDepth: LanguageDepth;
   pastoralIntegration: boolean;
+  theme?: ThemePreference;
 }
 
 export interface ProtectiveMechanism {

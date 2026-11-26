@@ -7,12 +7,39 @@
     <style>
       :root {
         color-scheme: light;
+        --bg: #f6f7f6;
+        --surface: #ffffff;
+        --border: #e2e6e4;
+        --text: #18201e;
+        --muted: #52605c;
+        --body: #3a4743;
+        --em-bg: #fef2f2;
+        --em-border: #fecaca;
+        --em-text: #7f1d1d;
+        --primary-bg: #2e5a4c;
+        --sec-bg: #f2f4f3;
+        --sec-border: #d4dbd8;
+      }
+      html.dark {
+        color-scheme: dark;
+        --bg: #0e1311;
+        --surface: #18201d;
+        --border: #2a3531;
+        --text: #edf2ef;
+        --muted: #9aa8a2;
+        --body: #c7d2cd;
+        --em-bg: #2a1517;
+        --em-border: #6b262b;
+        --em-text: #fca5a5;
+        --primary-bg: #356959;
+        --sec-bg: #1e2824;
+        --sec-border: #34423d;
       }
       body {
         margin: 0;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background-color: #f6f7f6;
-        color: #18201e;
+        background-color: var(--bg);
+        color: var(--text);
         min-height: 100vh;
         display: flex;
         align-items: center;
@@ -22,15 +49,15 @@
       main {
         max-width: 560px;
         width: 100%;
-        background: #ffffff;
-        border: 1px solid #e2e6e4;
+        background: var(--surface);
+        border: 1px solid var(--border);
         border-radius: 16px;
         padding: 32px;
         box-sizing: border-box;
       }
       .kicker {
         font-size: 13px;
-        color: #52605c;
+        color: var(--muted);
         margin: 0 0 8px 0;
       }
       h1 {
@@ -42,15 +69,15 @@
       p {
         font-size: 15px;
         line-height: 1.65;
-        color: #3a4743;
+        color: var(--body);
         margin: 0 0 16px 0;
       }
       .emergency {
-        background: #fef2f2;
-        border: 1px solid #fecaca;
+        background: var(--em-bg);
+        border: 1px solid var(--em-border);
         border-radius: 12px;
         padding: 16px;
-        color: #7f1d1d;
+        color: var(--em-text);
         font-size: 14px;
         line-height: 1.55;
         margin: 20px 0;
@@ -72,16 +99,29 @@
         text-decoration: none;
       }
       .primary {
-        background: #2e5a4c;
+        background: var(--primary-bg);
         color: #ffffff;
         border: none;
       }
       .secondary {
-        background: #f2f4f3;
-        color: #18201e;
-        border: 1px solid #d4dbd8;
+        background: var(--sec-bg);
+        color: var(--text);
+        border: 1px solid var(--sec-border);
       }
     </style>
+    <script>
+      (function () {
+        try {
+          var hint = localStorage.getItem('jairrestaura_theme_hint');
+          var prefersDark =
+            window.matchMedia &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (hint === 'dark' || (hint !== 'light' && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <main>

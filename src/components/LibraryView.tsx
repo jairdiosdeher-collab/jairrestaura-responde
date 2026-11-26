@@ -62,14 +62,14 @@ export function LibraryView({
 
   return (
     <div className="max-w-[1080px] mx-auto px-4 sm:px-8 py-8 space-y-6">
-      <header className="space-y-3 pb-6 border-b border-[#E2E6E4]">
-        <div className="text-xs font-medium text-[#52605C]">
+      <header className="space-y-3 pb-6 border-b border-[#E2E6E4] dark:border-[#2A3531]">
+        <div className="text-xs font-medium text-[#52605C] dark:text-[#9AA8A2]">
           Biblioteca psicológica local · Disponible 100% sin conexión
         </div>
-        <h1 className="text-2xl sm:text-3xl font-semibold text-[#18201E] text-balance">
+        <h1 className="text-2xl sm:text-3xl font-semibold text-[#18201E] dark:text-[#EDF2EF] text-balance">
           Recursos breves para tu autonomía emocional
         </h1>
-        <p className="text-sm sm:text-base text-[#3A4743] leading-relaxed max-w-[72ch]">
+        <p className="text-sm sm:text-base text-[#3A4743] dark:text-[#C7D2CD] leading-relaxed max-w-[72ch]">
           Noventa recursos escritos en lenguaje cercano y seguro, almacenados dentro de la aplicación para que puedas consultarlos, guardarlos y practicarlos en cualquier momento, incluso sin señal de internet.
         </p>
       </header>
@@ -77,14 +77,14 @@ export function LibraryView({
       {/* Search + Category Filter Controls */}
       <div className="space-y-4">
         <div className="relative max-w-md">
-          <Search className="w-4 h-4 text-[#7A8783] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-4 h-4 text-[#7A8783] dark:text-[#8E9C96] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar por tema (límites, máscara, calma, culpa...)"
             aria-label="Buscar en la biblioteca local"
-            className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-[#D4DBD8] focus:border-[#2E5A4C] rounded-lg focus:outline-none"
+            className="w-full pl-10 pr-4 py-2.5 text-sm bg-white dark:bg-[#18201D] text-[#18201E] dark:text-[#EDF2EF] placeholder:text-[#7A8783] dark:placeholder:text-[#7B8B85] border border-[#D4DBD8] dark:border-[#34423D] focus:border-[#2E5A4C] dark:focus:border-[#65B397] rounded-lg focus:outline-none"
           />
         </div>
 
@@ -102,8 +102,8 @@ export function LibraryView({
                 onClick={() => setFilter(tab.id)}
                 className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap ${
                   active
-                    ? 'bg-[#2E5A4C] text-white'
-                    : 'bg-white border border-[#E2E6E4] text-[#3A4743] hover:border-[#B8C2BE]'
+                    ? 'bg-[#2E5A4C] dark:bg-[#356959] text-white'
+                    : 'bg-white dark:bg-[#18201D] border border-[#E2E6E4] dark:border-[#2A3531] text-[#3A4743] dark:text-[#C7D2CD] hover:border-[#B8C2BE] dark:hover:border-[#41524C]'
                 }`}
               >
                 {tab.label}
@@ -114,7 +114,7 @@ export function LibraryView({
         </div>
 
         {filter === 'pastoral' && !pastoralIntegration && (
-          <p className="text-xs text-[#52605C]">
+          <p className="text-xs text-[#52605C] dark:text-[#9AA8A2]">
             Los recursos pastorales son completamente opcionales y respetan tu libertad de conciencia. Puedes activar o desactivar el enfoque cristiano evangélico en las preferencias laterales.
           </p>
         )}
@@ -122,11 +122,11 @@ export function LibraryView({
 
       {/* Resource grid */}
       {filteredResources.length === 0 ? (
-        <div className="bg-white border border-[#E2E6E4] rounded-xl p-8 text-center space-y-2">
-          <p className="text-sm font-medium text-[#18201E]">
+        <div className="bg-white dark:bg-[#18201D] border border-[#E2E6E4] dark:border-[#2A3531] rounded-xl p-8 text-center space-y-2">
+          <p className="text-sm font-medium text-[#18201E] dark:text-[#EDF2EF]">
             No encontramos recursos que coincidan con ese filtro.
           </p>
-          <p className="text-xs text-[#52605C]">
+          <p className="text-xs text-[#52605C] dark:text-[#9AA8A2]">
             Prueba limpiando la búsqueda o seleccionando otra categoría.
           </p>
         </div>
@@ -140,11 +140,11 @@ export function LibraryView({
             return (
               <article
                 key={item.id}
-                className="bg-white border border-[#E2E6E4] rounded-xl p-5 flex flex-col justify-between gap-4"
+                className="bg-white dark:bg-[#18201D] border border-[#E2E6E4] dark:border-[#2A3531] rounded-xl p-5 flex flex-col justify-between gap-4"
               >
                 <div className="space-y-2">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="text-xs text-[#52605C] tabular-nums">
+                    <div className="text-xs text-[#52605C] dark:text-[#9AA8A2] tabular-nums">
                       {item.categoryLabel} · {item.durationLabel}
                     </div>
                     <button
@@ -153,34 +153,34 @@ export function LibraryView({
                       aria-label={isFav ? 'Quitar de guardados' : 'Guardar recurso'}
                       className={`p-1.5 rounded-md transition-colors shrink-0 ${
                         isFav
-                          ? 'text-[#2E5A4C] bg-[#F2F6F4]'
-                          : 'text-[#7A8783] hover:text-[#18201E]'
+                          ? 'text-[#2E5A4C] dark:text-[#7EC4AA] bg-[#F2F6F4] dark:bg-[#1E2B26]'
+                          : 'text-[#7A8783] dark:text-[#8E9C96] hover:text-[#18201E] dark:hover:text-[#EDF2EF]'
                       }`}
                     >
                       <Bookmark className="w-4 h-4" fill={isFav ? 'currentColor' : 'none'} />
                     </button>
                   </div>
 
-                  <h2 className="text-base font-semibold text-[#18201E]">
+                  <h2 className="text-base font-semibold text-[#18201E] dark:text-[#EDF2EF]">
                     {item.title}
                   </h2>
-                  <p className="text-sm text-[#3A4743] leading-relaxed">
+                  <p className="text-sm text-[#3A4743] dark:text-[#C7D2CD] leading-relaxed">
                     {item.summary}
                   </p>
 
                   {isExpanded && (
-                    <div className="pt-3 mt-2 border-t border-[#EEF1EF] space-y-2.5 text-sm">
+                    <div className="pt-3 mt-2 border-t border-[#EEF1EF] dark:border-[#25302C] space-y-2.5 text-sm">
                       <div>
-                        <span className="text-xs font-semibold text-[#2E5A4C] block mb-0.5">
+                        <span className="text-xs font-semibold text-[#2E5A4C] dark:text-[#7EC4AA] block mb-0.5">
                           Práctica sugerida
                         </span>
-                        <p className="text-[#18201E] leading-relaxed">{item.practice}</p>
+                        <p className="text-[#18201E] dark:text-[#EDF2EF] leading-relaxed">{item.practice}</p>
                       </div>
                       <div>
-                        <span className="text-xs font-semibold text-[#52605C] block mb-0.5">
+                        <span className="text-xs font-semibold text-[#52605C] dark:text-[#9AA8A2] block mb-0.5">
                           Pregunta para observar
                         </span>
-                        <p className="text-[#3A4743] leading-relaxed">
+                        <p className="text-[#3A4743] dark:text-[#C7D2CD] leading-relaxed">
                           {item.reflectionQuestion}
                         </p>
                       </div>
@@ -192,7 +192,7 @@ export function LibraryView({
                   <button
                     type="button"
                     onClick={() => setExpandedId(isExpanded ? null : item.id)}
-                    className="text-xs font-medium text-[#2E5A4C] hover:underline whitespace-nowrap"
+                    className="text-xs font-medium text-[#2E5A4C] dark:text-[#7EC4AA] hover:underline whitespace-nowrap"
                   >
                     {isExpanded ? 'Ocultar práctica' : 'Leer práctica'}
                   </button>
@@ -202,8 +202,8 @@ export function LibraryView({
                     onClick={() => onLogPractice(item)}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap ${
                       isPracticed
-                        ? 'bg-[#F2F6F4] text-[#2E5A4C] border border-[#C6D5CE]'
-                        : 'bg-[#F6F7F6] text-[#18201E] border border-[#DCE1DF] hover:border-[#2E5A4C]'
+                        ? 'bg-[#F2F6F4] dark:bg-[#1E2B26] text-[#2E5A4C] dark:text-[#9BD7C1] border border-[#C6D5CE] dark:border-[#345448]'
+                        : 'bg-[#F6F7F6] dark:bg-[#131917] text-[#18201E] dark:text-[#EDF2EF] border border-[#DCE1DF] dark:border-[#34423D] hover:border-[#2E5A4C] dark:hover:border-[#65B397]'
                     }`}
                   >
                     {isPracticed && <Check className="w-3.5 h-3.5" />}

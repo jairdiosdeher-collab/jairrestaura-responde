@@ -22,6 +22,8 @@ export const LEGACY_STORAGE_KEYS = {
   SETTINGS: 'jairrestaura_settings_v1',
 };
 
+export const THEME_HINT_KEY = 'jairrestaura_theme_hint';
+
 export interface PersistedWorkspaceState {
   sessions: SessionRecord[];
   activeSessionId: string;
@@ -148,7 +150,10 @@ export async function loadWorkspaceFromIndexedDB(
           : [createFallbackSession()];
 
     const profile = storedProfile || legacyProfile || EMPTY_PROFILE;
-    const settings = storedSettings || legacySettings || defaultSettings;
+    const settings: AccompanimentSettings = {
+      ...defaultSettings,
+      ...(storedSettings || legacySettings || {}),
+    };
     const activeSessionId = storedActiveId || legacyActiveId || sessions[0].id;
     const favoriteResourceIds = storedFavorites || [];
     const exerciseProgress = storedProgress.sort((a, b) =>
@@ -258,6 +263,7 @@ export async function clearAllIndexedDBData(): Promise<void> {
     localStorage.removeItem(LEGACY_STORAGE_KEYS.ACTIVE_SESSION);
     localStorage.removeItem(LEGACY_STORAGE_KEYS.PROFILE);
     localStorage.removeItem(LEGACY_STORAGE_KEYS.SETTINGS);
+    localStorage.removeItem(THEME_HINT_KEY);
   } catch {
     // Ignore
   }

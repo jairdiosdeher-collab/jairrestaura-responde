@@ -1,5 +1,6 @@
 import { Plus, Trash2, X } from 'lucide-react';
 import { PWAInstallButton } from './PWAInstallButton';
+import { WhatsAppMenuAccess } from './WhatsAppPastorButton';
 import type {
   AccompanimentSettings,
   AccompanimentStyle,
@@ -20,6 +21,7 @@ interface SessionSidebarProps {
   onChangeView: (view: AppView) => void;
   mobileOpen: boolean;
   onCloseMobile: () => void;
+  isOnline: boolean;
 }
 
 const STYLE_OPTIONS: { value: AccompanimentStyle; label: string }[] = [
@@ -62,22 +64,23 @@ export function SessionSidebar({
   onChangeView,
   mobileOpen,
   onCloseMobile,
+  isOnline,
 }: SessionSidebarProps) {
   const sidebarBody = (
-    <div className="flex flex-col h-full bg-[#F2F4F3] border-r border-[#E2E6E4]">
+    <div className="flex flex-col h-full bg-[#F2F4F3] dark:bg-[#131917] border-r border-[#E2E6E4] dark:border-[#2A3531]">
       {/* Mobile navigation strip */}
-      <div className="md:hidden px-4 py-3 border-b border-[#E2E6E4] flex items-center justify-between">
-        <span className="text-xs font-medium text-[#52605C]">Espacios</span>
+      <div className="md:hidden px-4 py-3 border-b border-[#E2E6E4] dark:border-[#2A3531] flex items-center justify-between">
+        <span className="text-xs font-medium text-[#52605C] dark:text-[#9AA8A2]">Espacios</span>
         <button
           type="button"
           onClick={onCloseMobile}
           aria-label="Cerrar panel"
-          className="p-1.5 text-[#52605C] hover:text-[#18201E] rounded-md"
+          className="p-1.5 text-[#52605C] dark:text-[#9AA8A2] hover:text-[#18201E] dark:hover:text-[#EDF2EF] rounded-md"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
-      <div className="md:hidden px-4 py-2 border-b border-[#E2E6E4] grid grid-cols-2 gap-1.5">
+      <div className="md:hidden px-4 py-2 border-b border-[#E2E6E4] dark:border-[#2A3531] grid grid-cols-2 gap-1.5">
         {(
           [
             ['conversation', 'Conversación'],
@@ -96,8 +99,8 @@ export function SessionSidebar({
             }}
             className={`px-3 py-2 text-xs font-medium rounded-md text-left transition-colors whitespace-nowrap truncate ${
               activeView === id
-                ? 'bg-white text-[#18201E] border border-[#D4DBD8]'
-                : 'text-[#52605C] hover:text-[#18201E]'
+                ? 'bg-white dark:bg-[#1C2521] text-[#18201E] dark:text-[#EDF2EF] border border-[#D4DBD8] dark:border-[#34423D]'
+                : 'text-[#52605C] dark:text-[#9AA8A2] hover:text-[#18201E] dark:hover:text-[#EDF2EF]'
             }`}
           >
             {label}
@@ -108,7 +111,7 @@ export function SessionSidebar({
       {/* Sessions list */}
       <div className="flex-1 overflow-y-auto px-4 py-5">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xs font-semibold text-[#52605C] tracking-wide">
+          <h2 className="text-xs font-semibold text-[#52605C] dark:text-[#9AA8A2] tracking-wide">
             Sesiones recientes
           </h2>
           <button
@@ -118,7 +121,7 @@ export function SessionSidebar({
               onChangeView('conversation');
               onCloseMobile();
             }}
-            className="inline-flex items-center gap-1 text-xs font-medium text-[#2E5A4C] hover:text-[#1F3E34] transition-colors whitespace-nowrap"
+            className="inline-flex items-center gap-1 text-xs font-medium text-[#2E5A4C] dark:text-[#7EC4AA] hover:text-[#1F3E34] dark:hover:text-[#9BD7C1] transition-colors whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5" />
             Nueva
@@ -140,12 +143,12 @@ export function SessionSidebar({
                   }}
                   className={`flex-1 min-w-0 text-left px-3 py-2.5 rounded-lg transition-colors ${
                     isSelected
-                      ? 'bg-white text-[#18201E] border border-[#D4DBD8]'
-                      : 'text-[#3A4743] hover:bg-white/60 border border-transparent'
+                      ? 'bg-white dark:bg-[#1C2521] text-[#18201E] dark:text-[#EDF2EF] border border-[#D4DBD8] dark:border-[#34423D]'
+                      : 'text-[#3A4743] dark:text-[#C7D2CD] hover:bg-white/60 dark:hover:bg-[#1A221F] border border-transparent'
                   }`}
                 >
                   <div className="text-sm font-medium truncate">{session.title}</div>
-                  <div className="mt-0.5 text-xs text-[#52605C] tabular-nums flex items-center gap-1.5">
+                  <div className="mt-0.5 text-xs text-[#52605C] dark:text-[#8E9C96] tabular-nums flex items-center gap-1.5">
                     <span>{formatShortDate(session.updatedAt)}</span>
                     <span aria-hidden="true">·</span>
                     <span>
@@ -158,7 +161,7 @@ export function SessionSidebar({
                     type="button"
                     onClick={() => onDeleteSession(session.id)}
                     aria-label={`Eliminar sesión ${session.title}`}
-                    className="p-2 text-[#7A8783] hover:text-[#B91C1C] opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity rounded-md"
+                    className="p-2 text-[#7A8783] dark:text-[#8E9C96] hover:text-[#B91C1C] dark:hover:text-[#FCA5A5] opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity rounded-md"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -170,15 +173,15 @@ export function SessionSidebar({
       </div>
 
       {/* Accompaniment Preferences */}
-      <div className="border-t border-[#E2E6E4] px-4 py-5 space-y-4 bg-[#F6F7F6]">
-        <h2 className="text-xs font-semibold text-[#52605C]">
+      <div className="border-t border-[#E2E6E4] dark:border-[#2A3531] px-4 py-5 space-y-4 bg-[#F6F7F6] dark:bg-[#101513]">
+        <h2 className="text-xs font-semibold text-[#52605C] dark:text-[#9AA8A2]">
           Preferencias de acompañamiento
         </h2>
 
         <div>
           <label
             htmlFor="pref-style"
-            className="block text-xs font-medium text-[#3A4743] mb-1.5"
+            className="block text-xs font-medium text-[#3A4743] dark:text-[#C7D2CD] mb-1.5"
           >
             Estilo de respuesta
           </label>
@@ -191,7 +194,7 @@ export function SessionSidebar({
                 preferredStyle: e.target.value as AccompanimentStyle,
               })
             }
-            className="w-full px-3 py-2 text-xs bg-white border border-[#D4DBD8] rounded-lg text-[#18201E] focus:outline-none focus:border-[#2E5A4C]"
+            className="w-full px-3 py-2 text-xs bg-white dark:bg-[#18201D] border border-[#D4DBD8] dark:border-[#34423D] rounded-lg text-[#18201E] dark:text-[#EDF2EF] focus:outline-none focus:border-[#2E5A4C] dark:focus:border-[#65B397]"
           >
             {STYLE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -204,7 +207,7 @@ export function SessionSidebar({
         <div>
           <label
             htmlFor="pref-depth"
-            className="block text-xs font-medium text-[#3A4743] mb-1.5"
+            className="block text-xs font-medium text-[#3A4743] dark:text-[#C7D2CD] mb-1.5"
           >
             Extensión y claridad
           </label>
@@ -217,7 +220,7 @@ export function SessionSidebar({
                 languageDepth: e.target.value as LanguageDepth,
               })
             }
-            className="w-full px-3 py-2 text-xs bg-white border border-[#D4DBD8] rounded-lg text-[#18201E] focus:outline-none focus:border-[#2E5A4C]"
+            className="w-full px-3 py-2 text-xs bg-white dark:bg-[#18201D] border border-[#D4DBD8] dark:border-[#34423D] rounded-lg text-[#18201E] dark:text-[#EDF2EF] focus:outline-none focus:border-[#2E5A4C] dark:focus:border-[#65B397]"
           >
             {DEPTH_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -238,10 +241,10 @@ export function SessionSidebar({
                   pastoralIntegration: e.target.checked,
                 })
               }
-              className="mt-0.5 h-4 w-4 rounded border-[#B8C2BE] text-[#2E5A4C] focus:ring-[#2E5A4C]"
+              className="mt-0.5 h-4 w-4 rounded border-[#B8C2BE] dark:border-[#41524C] bg-white dark:bg-[#18201D] accent-[#2E5A4C] dark:accent-[#65B397] text-[#2E5A4C] focus:ring-[#2E5A4C]"
             />
-            <span className="text-xs leading-relaxed text-[#3A4743]">
-              <span className="font-medium text-[#18201E] block">
+            <span className="text-xs leading-relaxed text-[#3A4743] dark:text-[#C7D2CD]">
+              <span className="font-medium text-[#18201E] dark:text-[#EDF2EF] block">
                 Integración pastoral opcional
               </span>
               Incluir perspectiva cristiana evangélica (gracia, esperanza y dignidad), sin culpabilización.
@@ -249,7 +252,8 @@ export function SessionSidebar({
           </label>
         </div>
 
-        <div className="pt-2">
+        <div className="pt-2 space-y-3 border-t border-[#E2E6E4] dark:border-[#2A3531]">
+          <WhatsAppMenuAccess isOnline={isOnline} />
           <PWAInstallButton compact />
         </div>
       </div>
@@ -265,7 +269,7 @@ export function SessionSidebar({
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden flex">
           <div
-            className="fixed inset-0 bg-[#18201E]/30 backdrop-blur-[1px]"
+            className="fixed inset-0 bg-[#18201E]/30 dark:bg-black/60 backdrop-blur-[1px]"
             onClick={onCloseMobile}
           />
           <aside className="relative z-10 w-[280px] max-w-[85vw] h-full">

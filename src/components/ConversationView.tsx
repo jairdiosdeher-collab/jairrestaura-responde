@@ -104,9 +104,9 @@ export function ConversationView({
       {!isOnline && (
         <div
           role="status"
-          className="mx-4 sm:mx-8 mt-4 p-3.5 bg-[#FFFBEB] border border-[#FDE68A] rounded-xl flex items-start gap-3 text-xs sm:text-sm text-[#78350F]"
+          className="mx-4 sm:mx-8 mt-4 p-3.5 bg-[#FFFBEB] dark:bg-[#261E0F] border border-[#FDE68A] dark:border-[#5C4417] rounded-xl flex items-start gap-3 text-xs sm:text-sm text-[#78350F] dark:text-[#FDE68A]"
         >
-          <WifiOff className="w-4 h-4 shrink-0 mt-0.5 text-[#B45309]" />
+          <WifiOff className="w-4 h-4 shrink-0 mt-0.5 text-[#B45309] dark:text-[#FBBF24]" />
           <p className="leading-relaxed">
             Modo sin conexión: estás utilizando el acompañamiento local de JAIRRESTAURA. Las respuestas generativas de Gemini estarán disponibles nuevamente cuando recuperes internet.
           </p>
@@ -116,15 +116,15 @@ export function ConversationView({
       {isOnline && justReconnected && (
         <div
           role="status"
-          className="mx-4 sm:mx-8 mt-4 p-4 bg-[#F2F6F4] border border-[#C6D5CE] rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm text-[#18201E]"
+          className="mx-4 sm:mx-8 mt-4 p-4 bg-[#F2F6F4] dark:bg-[#17231F] border border-[#C6D5CE] dark:border-[#2F4A40] rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm text-[#18201E] dark:text-[#EDF2EF]"
         >
           <div className="flex items-start gap-3">
-            <Wifi className="w-4 h-4 shrink-0 mt-0.5 text-[#2E5A4C]" />
+            <Wifi className="w-4 h-4 shrink-0 mt-0.5 text-[#2E5A4C] dark:text-[#7EC4AA]" />
             <div className="space-y-0.5">
               <p className="font-semibold">
                 Conexión restablecida · Ya puedes continuar con Gemini
               </p>
-              <p className="text-xs text-[#3A4743] leading-relaxed">
+              <p className="text-xs text-[#3A4743] dark:text-[#C7D2CD] leading-relaxed">
                 Tus mensajes escritos sin internet se conservaron localmente y no se han enviado automáticamente.
                 {offlineTurnsPending > 0
                   ? ' Si lo deseas, puedes compartir el resumen de lo conversado offline para actualizar tu acompañamiento con Gemini.'
@@ -139,7 +139,7 @@ export function ConversationView({
                 type="button"
                 disabled={isLoading}
                 onClick={() => void onSyncOfflineContextWithGemini()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-[#2E5A4C] hover:bg-[#24483D] disabled:opacity-60 rounded-lg transition-colors whitespace-nowrap"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-[#2E5A4C] hover:bg-[#24483D] dark:bg-[#356959] dark:hover:bg-[#2B5649] disabled:opacity-60 rounded-lg transition-colors whitespace-nowrap"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 Continuar con Gemini usando este contexto
@@ -148,7 +148,7 @@ export function ConversationView({
             <button
               type="button"
               onClick={onDismissReconnect}
-              className="px-3 py-1.5 text-xs font-medium text-[#3A4743] bg-white border border-[#D4DBD8] hover:border-[#2E5A4C] rounded-lg transition-colors whitespace-nowrap"
+              className="px-3 py-1.5 text-xs font-medium text-[#3A4743] dark:text-[#EDF2EF] bg-white dark:bg-[#1E2824] border border-[#D4DBD8] dark:border-[#34423D] hover:border-[#2E5A4C] dark:hover:border-[#65B397] rounded-lg transition-colors whitespace-nowrap"
             >
               Solo continuar normalmente
             </button>
@@ -161,46 +161,46 @@ export function ConversationView({
         {messages.length === 0 ? (
           <div className="space-y-8">
             {/* Editorial Welcome Split */}
-            <section className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch bg-white border border-[#E2E6E4] rounded-xl overflow-hidden">
+            <section className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch bg-white dark:bg-[#18201D] border border-[#E2E6E4] dark:border-[#2A3531] rounded-xl overflow-hidden">
               <div className="md:col-span-7 p-6 sm:p-8 flex flex-col justify-between gap-5">
                 <div className="space-y-3">
-                  <p className="text-xs font-medium text-[#52605C]">
+                  <p className="text-xs font-medium text-[#52605C] dark:text-[#9AA8A2]">
                     Acompañamiento psicológico personalizado ·{' '}
                     {isOnline ? 'Modo en línea (Gemini)' : 'Modo local sin conexión'}
                   </p>
-                  <h1 className="text-2xl sm:text-3xl font-semibold text-[#18201E] leading-tight text-balance">
+                  <h1 className="text-2xl sm:text-3xl font-semibold text-[#18201E] dark:text-[#EDF2EF] leading-tight text-balance">
                     Comprender antes de aconsejar. Acompañar antes de confrontar.
                   </h1>
-                  <p className="text-sm sm:text-base text-[#3A4743] leading-relaxed max-w-[60ch]">
+                  <p className="text-sm sm:text-base text-[#3A4743] dark:text-[#C7D2CD] leading-relaxed max-w-[60ch]">
                     Este es un espacio sereno para explorar lo que sientes, entender qué buscan proteger tus respuestas habituales y dar pasos realistas hacia una vida más auténtica y libre.
                   </p>
                 </div>
-                <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-[#52605C]">
+                <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-[#52605C] dark:text-[#9AA8A2]">
                   <span>Sin etiquetas ni diagnósticos apresurados</span>
                   <span aria-hidden="true">·</span>
                   <button
                     type="button"
                     onClick={onGoToProfile}
-                    className="text-[#2E5A4C] font-medium hover:underline"
+                    className="text-[#2E5A4C] dark:text-[#7EC4AA] font-medium hover:underline"
                   >
                     Ver tu perfil provisional
                   </button>
                 </div>
               </div>
 
-              <div className="md:col-span-5 min-h-[200px] bg-[#E8ECEA] relative">
+              <div className="md:col-span-5 min-h-[200px] bg-[#E8ECEA] dark:bg-[#1E2824] relative">
                 {!imgFailed ? (
                   <img
                     src="/src/assets/images/sanctuary_studio_light_1795685678893.jpg"
                     alt="Espacio sereno de conversación terapéutica con luz natural de mañana"
                     referrerPolicy="no-referrer"
                     onError={() => setImgFailed(true)}
-                    className="w-full h-full object-cover md:absolute md:inset-0"
+                    className="w-full h-full object-cover md:absolute md:inset-0 dark:brightness-90 dark:contrast-105"
                   />
                 ) : (
-                  <div className="w-full h-full min-h-[200px] flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-[#ECEFEC] to-[#DCE3DF]">
-                    <Compass className="w-7 h-7 text-[#2E5A4C] mb-2" />
-                    <span className="text-xs font-medium text-[#3A4743]">
+                  <div className="w-full h-full min-h-[200px] flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-[#ECEFEC] to-[#DCE3DF] dark:from-[#1A2420] dark:to-[#121916]">
+                    <Compass className="w-7 h-7 text-[#2E5A4C] dark:text-[#7EC4AA] mb-2" />
+                    <span className="text-xs font-medium text-[#3A4743] dark:text-[#C7D2CD]">
                       Espacio de escucha y claridad
                     </span>
                   </div>
@@ -210,7 +210,7 @@ export function ConversationView({
 
             {/* Starting reflection prompts */}
             <section className="space-y-3">
-              <h2 className="text-sm font-medium text-[#52605C]">
+              <h2 className="text-sm font-medium text-[#52605C] dark:text-[#9AA8A2]">
                 Si no sabes por dónde empezar, puedes elegir una puerta de entrada:
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -220,12 +220,12 @@ export function ConversationView({
                     type="button"
                     onClick={() => void onSendMessage(starter.prompt)}
                     disabled={isLoading}
-                    className="text-left p-4 bg-white border border-[#E2E6E4] hover:border-[#2E5A4C] rounded-xl transition-colors group focus-visible:outline-2 focus-visible:outline-[#2E5A4C]"
+                    className="text-left p-4 bg-white dark:bg-[#18201D] border border-[#E2E6E4] dark:border-[#2A3531] hover:border-[#2E5A4C] dark:hover:border-[#65B397] rounded-xl transition-colors group focus-visible:outline-2 focus-visible:outline-[#2E5A4C] dark:focus-visible:outline-[#65B397]"
                   >
-                    <div className="text-sm font-semibold text-[#18201E] group-hover:text-[#2E5A4C] transition-colors">
+                    <div className="text-sm font-semibold text-[#18201E] dark:text-[#EDF2EF] group-hover:text-[#2E5A4C] dark:group-hover:text-[#7EC4AA] transition-colors">
                       {starter.label}
                     </div>
-                    <p className="mt-1.5 text-xs sm:text-sm text-[#52605C] leading-relaxed line-clamp-3">
+                    <p className="mt-1.5 text-xs sm:text-sm text-[#52605C] dark:text-[#9AA8A2] leading-relaxed line-clamp-3">
                       {starter.prompt}
                     </p>
                   </button>
@@ -235,11 +235,11 @@ export function ConversationView({
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="pb-3 border-b border-[#E2E6E4] flex items-center justify-between gap-4">
-              <h1 className="text-lg font-semibold text-[#18201E] truncate">
+            <div className="pb-3 border-b border-[#E2E6E4] dark:border-[#2A3531] flex items-center justify-between gap-4">
+              <h1 className="text-lg font-semibold text-[#18201E] dark:text-[#EDF2EF] truncate">
                 {sessionTitle}
               </h1>
-              <span className="text-xs text-[#52605C] tabular-nums shrink-0">
+              <span className="text-xs text-[#52605C] dark:text-[#9AA8A2] tabular-nums shrink-0">
                 {messages.length} {messages.length === 1 ? 'intervención' : 'intervenciones'}
               </span>
             </div>
@@ -247,10 +247,10 @@ export function ConversationView({
             {latestUrgentMessage?.analysis?.safetyFlag && (
               <div
                 role="alert"
-                className="p-4 sm:p-5 bg-[#FEF2F2] border border-[#FECACA] rounded-xl flex items-start gap-3.5"
+                className="p-4 sm:p-5 bg-[#FEF2F2] dark:bg-[#2A1517] border border-[#FECACA] dark:border-[#6B262B] rounded-xl flex items-start gap-3.5"
               >
-                <PhoneCall className="w-5 h-5 text-[#B91C1C] shrink-0 mt-0.5" />
-                <div className="space-y-1.5 text-sm text-[#7F1D1D]">
+                <PhoneCall className="w-5 h-5 text-[#B91C1C] dark:text-[#FCA5A5] shrink-0 mt-0.5" />
+                <div className="space-y-1.5 text-sm text-[#7F1D1D] dark:text-[#FECACA]">
                   <p className="font-semibold">
                     Prioricemos tu seguridad y cuidado inmediato
                   </p>
@@ -279,8 +279,8 @@ export function ConversationView({
                     className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
                   >
                     {/* Metadata row: unboxed text with middot separators */}
-                    <div className="mb-1.5 flex flex-wrap items-center gap-2 text-xs text-[#52605C]">
-                      <span className="font-semibold text-[#18201E]">
+                    <div className="mb-1.5 flex flex-wrap items-center gap-2 text-xs text-[#52605C] dark:text-[#9AA8A2]">
+                      <span className="font-semibold text-[#18201E] dark:text-[#EDF2EF]">
                         {isUser
                           ? 'Tú'
                           : isLocalOffline
@@ -305,10 +305,10 @@ export function ConversationView({
 
                     {/* Message body */}
                     <div
-                      className={`max-w-[70ch] text-[15px] leading-[1.7] whitespace-pre-wrap ${
+                      className={`max-w-[70ch] text-[15px] leading-[1.7] dark:tracking-[0.01em] whitespace-pre-wrap ${
                         isUser
-                          ? 'bg-[#EAEFED] text-[#18201E] px-5 py-3.5 rounded-2xl rounded-tr-sm'
-                          : 'bg-white border border-[#E2E6E4] text-[#18201E] px-5 sm:px-6 py-4 sm:py-5 rounded-2xl rounded-tl-sm'
+                          ? 'bg-[#EAEFED] dark:bg-[#21332C] text-[#18201E] dark:text-[#EDF2EF] px-5 py-3.5 rounded-2xl rounded-tr-sm'
+                          : 'bg-white dark:bg-[#18201D] border border-[#E2E6E4] dark:border-[#2A3531] text-[#18201E] dark:text-[#EDF2EF] px-5 sm:px-6 py-4 sm:py-5 rounded-2xl rounded-tl-sm'
                       }`}
                     >
                       {msg.content}
@@ -320,7 +320,7 @@ export function ConversationView({
                         <button
                           type="button"
                           onClick={() => toggleInsight(msg.id)}
-                          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#52605C] hover:text-[#18201E] transition-colors py-1"
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#52605C] dark:text-[#9AA8A2] hover:text-[#18201E] dark:hover:text-[#EDF2EF] transition-colors py-1"
                         >
                           {isExpanded ? (
                             <ChevronUp className="w-3.5 h-3.5" />
@@ -331,33 +331,33 @@ export function ConversationView({
                         </button>
 
                         {isExpanded && (
-                          <div className="mt-1.5 p-4 bg-[#F2F4F3] border border-[#E2E6E4] rounded-xl text-xs text-[#3A4743] space-y-2">
+                          <div className="mt-1.5 p-4 bg-[#F2F4F3] dark:bg-[#141B18] border border-[#E2E6E4] dark:border-[#2A3531] rounded-xl text-xs text-[#3A4743] dark:text-[#C7D2CD] space-y-2">
                             <div>
-                              <span className="font-semibold text-[#18201E]">
+                              <span className="font-semibold text-[#18201E] dark:text-[#EDF2EF]">
                                 Emoción percibida:{' '}
                               </span>
                               <span>{msg.analysis.detectedEmotion}</span>
                             </div>
                             <div>
-                              <span className="font-semibold text-[#18201E]">
+                              <span className="font-semibold text-[#18201E] dark:text-[#EDF2EF]">
                                 Necesidad emocional posible:{' '}
                               </span>
                               <span>{msg.analysis.underlyingNeed}</span>
                             </div>
                             {msg.analysis.protectiveFunctionInsight && (
                               <div>
-                                <span className="font-semibold text-[#18201E]">
+                                <span className="font-semibold text-[#18201E] dark:text-[#EDF2EF]">
                                   Función protectora observada:{' '}
                                 </span>
                                 <span>{msg.analysis.protectiveFunctionInsight}</span>
                               </div>
                             )}
-                            <div className="pt-1 border-t border-[#E2E6E4] text-[#52605C]">
+                            <div className="pt-1 border-t border-[#E2E6E4] dark:border-[#2A3531] text-[#52605C] dark:text-[#9AA8A2]">
                               Si alguna lectura no te representa, dímelo o ajústala directamente en{' '}
                               <button
                                 type="button"
                                 onClick={onGoToProfile}
-                                className="text-[#2E5A4C] font-medium hover:underline"
+                                className="text-[#2E5A4C] dark:text-[#7EC4AA] font-medium hover:underline"
                               >
                                 Mi Perfil
                               </button>
@@ -372,12 +372,12 @@ export function ConversationView({
                     {!isUser &&
                       msg.suggestedMicroIntervention &&
                       msg.suggestedMicroIntervention.title.trim().length > 0 && (
-                        <div className="mt-3 max-w-[70ch] w-full p-4 bg-[#F2F6F4] border border-[#D4E0DA] rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="mt-3 max-w-[70ch] w-full p-4 bg-[#F2F6F4] dark:bg-[#17231F] border border-[#D4E0DA] dark:border-[#2F4A40] rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                           <div className="space-y-0.5">
-                            <div className="text-xs text-[#52605C]">
+                            <div className="text-xs text-[#52605C] dark:text-[#9AA8A2]">
                               Ejercicio sugerido · {msg.suggestedMicroIntervention.durationLabel}
                             </div>
-                            <div className="text-sm font-semibold text-[#18201E]">
+                            <div className="text-sm font-semibold text-[#18201E] dark:text-[#EDF2EF]">
                               {msg.suggestedMicroIntervention.title}
                             </div>
                           </div>
@@ -386,7 +386,7 @@ export function ConversationView({
                             onClick={() =>
                               onOpenSuggestedExercise(msg.suggestedMicroIntervention!)
                             }
-                            className="px-4 py-2 text-xs font-medium text-[#2E5A4C] bg-white border border-[#C6D5CE] hover:border-[#2E5A4C] rounded-lg transition-colors whitespace-nowrap shrink-0"
+                            className="px-4 py-2 text-xs font-medium text-[#2E5A4C] dark:text-[#9BD7C1] bg-white dark:bg-[#1E2824] border border-[#C6D5CE] dark:border-[#345448] hover:border-[#2E5A4C] dark:hover:border-[#65B397] rounded-lg transition-colors whitespace-nowrap shrink-0"
                           >
                             Practicar paso a paso
                           </button>
@@ -398,10 +398,10 @@ export function ConversationView({
 
               {isLoading && (
                 <div className="flex flex-col items-start">
-                  <div className="mb-1.5 text-xs font-semibold text-[#18201E]">
+                  <div className="mb-1.5 text-xs font-semibold text-[#18201E] dark:text-[#EDF2EF]">
                     JAIRRESTAURA
                   </div>
-                  <div className="px-5 py-4 bg-white border border-[#E2E6E4] rounded-2xl rounded-tl-sm text-sm text-[#52605C]">
+                  <div className="px-5 py-4 bg-white dark:bg-[#18201D] border border-[#E2E6E4] dark:border-[#2A3531] rounded-2xl rounded-tl-sm text-sm text-[#52605C] dark:text-[#9AA8A2]">
                     Leyendo con atención lo que compartes...
                   </div>
                 </div>
@@ -410,7 +410,7 @@ export function ConversationView({
               {errorMessage && (
                 <div
                   role="alert"
-                  className="p-4 bg-[#FEF2F2] border border-[#FECACA] rounded-xl flex items-start gap-3 text-sm text-[#991B1B]"
+                  className="p-4 bg-[#FEF2F2] dark:bg-[#2A1517] border border-[#FECACA] dark:border-[#6B262B] rounded-xl flex items-start gap-3 text-sm text-[#991B1B] dark:text-[#FCA5A5]"
                 >
                   <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{errorMessage}</span>
@@ -423,10 +423,10 @@ export function ConversationView({
       </div>
 
       {/* Composer */}
-      <div className="border-t border-[#E2E6E4] bg-[#F6F7F6] px-4 sm:px-8 py-4">
+      <div className="border-t border-[#E2E6E4] dark:border-[#2A3531] bg-[#F6F7F6] dark:bg-[#0E1311] px-4 sm:px-8 pt-3.5 pb-[4.5rem] md:pb-20">
         <form
           onSubmit={handleSubmit}
-          className="bg-white border border-[#D4DBD8] focus-within:border-[#2E5A4C] rounded-xl p-2 flex items-end gap-2 transition-colors"
+          className="bg-white dark:bg-[#18201D] border border-[#D4DBD8] dark:border-[#34423D] focus-within:border-[#2E5A4C] dark:focus-within:border-[#65B397] rounded-xl p-2 flex items-end gap-2 transition-colors"
         >
           <label htmlFor="accompany-input" className="sr-only">
             Escribe lo que estás sintiendo o viviendo
@@ -444,18 +444,18 @@ export function ConversationView({
                 : 'Modo local sin conexión: escribe aquí y tus conversaciones se guardarán en este dispositivo...'
             }
             disabled={isLoading}
-            className="flex-1 resize-none bg-transparent px-3 py-2 text-sm sm:text-[15px] text-[#18201E] placeholder:text-[#7A8783] focus:outline-none max-h-[180px]"
+            className="flex-1 resize-none bg-transparent px-3 py-2 text-sm sm:text-[15px] text-[#18201E] dark:text-[#EDF2EF] placeholder:text-[#7A8783] dark:placeholder:text-[#7B8B85] focus:outline-none max-h-[180px]"
           />
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
             aria-label="Enviar mensaje"
-            className="h-10 w-10 inline-flex items-center justify-center rounded-lg bg-[#2E5A4C] hover:bg-[#24483D] disabled:bg-[#CBD4D0] text-white transition-colors shrink-0 focus-visible:outline-2 focus-visible:outline-[#2E5A4C]"
+            className="h-10 w-10 inline-flex items-center justify-center rounded-lg bg-[#2E5A4C] hover:bg-[#24483D] dark:bg-[#356959] dark:hover:bg-[#2B5649] disabled:bg-[#CBD4D0] dark:disabled:bg-[#27332F] disabled:text-white/70 dark:disabled:text-[#6E7E78] text-white transition-colors shrink-0 focus-visible:outline-2 focus-visible:outline-[#2E5A4C] dark:focus-visible:outline-[#65B397]"
           >
             <ArrowUp className="w-4 h-4" />
           </button>
         </form>
-        <p className="mt-2 text-xs text-[#52605C]">
+        <p className="mt-2 text-xs text-[#52605C] dark:text-[#8E9C96]">
           {isOnline
             ? 'Modo en línea (Gemini) · Almacenamiento local en IndexedDB · No sustituye psicoterapia ni atención médica.'
             : 'Modo sin conexión activo · Acompañamiento local guardado en IndexedDB · No sustituye atención médica de urgencias.'}

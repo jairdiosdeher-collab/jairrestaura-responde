@@ -6,6 +6,7 @@ import { PrivacyView } from './components/PrivacyView';
 import { ProfileView } from './components/ProfileView';
 import { SessionSidebar } from './components/SessionSidebar';
 import { TopBar } from './components/TopBar';
+import { WhatsAppFloatingButton } from './components/WhatsAppPastorButton';
 import { EMPTY_PROFILE } from './data/microinterventions';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { generateLocalOfflineResponse } from './offline/localEngine';
@@ -18,6 +19,7 @@ import {
   saveProfileToIndexedDB,
   saveSessionsToIndexedDB,
   saveSettingsToIndexedDB,
+  THEME_HINT_KEY,
 } from './storage/indexedDb';
 import type {
   AccompanimentAnalysis,
@@ -30,13 +32,25 @@ import type {
   ProtectiveMechanism,
   PsychologicalProfile,
   SessionRecord,
+  ThemePreference,
 } from './types/jairrestaura';
 
 const DEFAULT_SETTINGS: AccompanimentSettings = {
   preferredStyle: 'auto',
   languageDepth: 'auto',
   pastoralIntegration: false,
+  theme: 'system',
 };
+
+function readInitialThemeHint(): ThemePreference {
+  try {
+    const raw = localStorage.getItem(THEME_HINT_KEY);
+    if (raw === 'light' || raw === 'dark' || raw === 'system') return raw;
+  } catch {
+    // Ignore storage access errors
+  }
+  return 'system';
+}
 
 function createId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -104,7 +118,14 @@ export default function App() {
   const [sessions, setSessions] = useState<SessionRecord[]>(() => [createEmptySession()]);
   const [activeSessionId, setActiveSessionId] = useState<string>('');
   const [profile, setProfile] = useState<PsychologicalProfile>(EMPTY_PROFILE);
-  const [settings, setSettings] = useState<AccompanimentSettings>(DEFAULT_SETTINGS);
+  const [settings, setSettings] = useState<AccompanimentSettings>(() => ({
+    ...DEFAULT_SETTINGS,
+    theme: readInitialThemeHint(),
+  }));
+  const [systemPrefersDark, setSystemPrefersDark] = useState<boolean>(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return false;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
   const [exerciseProgress, setExerciseProgress] = useState<ExerciseProgressEntry[]>([]);
   const [favoriteResourceIds, setFavoriteResourceIds] = useState<string[]>([]);
 
@@ -115,6 +136,57 @@ export default function App() {
   const [preselectedExercise, setPreselectedExercise] =
     useState<MicroInterventionSuggestion | null>(null);
   const [justReconnected, setJustReconnected] = useState(false);
+
+  // Track device color scheme preference when no explicit choice is saved
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = (e: MediaQueryListEvent) => setSystemPrefersDark(e.matches);
+    setSystemPrefersDark(media.matches);
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, []);
+
+  const themePreference: ThemePreference = settings.theme || 'system';
+  const resolvedTheme: 'light' | 'dark' =
+    themePreference === 'dark'
+      ? 'dark'
+      : themePreference === 'light'
+        ? 'light'
+        : systemPrefersDark
+          ? 'dark'
+          : 'light';
+
+  useEffect(() => {
+    const isDark = resolvedTheme === 'dark';
+    const root = document.documentElement;
+    root.classList.toggle('dark', isDark);
+    root.style.colorScheme = isDark ? 'dark' : 'light';
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', isDark ? '#0E1311' : '#2E5A4C');
+    }
+    if (hydrated) {
+      try {
+        localStorage.setItem(THEME_HINT_KEY, themePreference);
+      } catch {
+        // Ignore storage errors
+      }
+    }
+  }, [resolvedTheme, themePreference, hydrated]);
+
+  const handleToggleTheme = useCallback(() => {
+    const nextTheme: ThemePreference = resolvedTheme === 'dark' ? 'light' : 'dark';
+    setSettings((prev) => ({
+      ...prev,
+      theme: nextTheme,
+    }));
+    try {
+      localStorage.setItem(THEME_HINT_KEY, nextTheme);
+    } catch {
+      // Ignore storage errors
+    }
+  }, [resolvedTheme]);
 
   // Hydrate full state from IndexedDB (migrating any legacy localStorage)
   useEffect(() => {
@@ -252,7 +324,8 @@ export default function App() {
           content,
           activeSession.messages,
           profile,
-          settings
+          settings,
+          profileCorrectionNote
         );
 
         const assistantMsg: ChatMessage = {
@@ -278,12 +351,22 @@ export default function App() {
           )
         );
 
-        if (localResult.provisionalPattern) {
+        if (
+          localResult.provisionalAffirmedFact ||
+          localResult.provisionalPattern ||
+          localResult.provisionalHypothesis
+        ) {
           setProfile((prev) => ({
             ...prev,
-            observedPatterns: mergeUniqueStrings(prev.observedPatterns, [
-              localResult.provisionalPattern!,
-            ]),
+            affirmedFacts: localResult.provisionalAffirmedFact
+              ? mergeUniqueStrings(prev.affirmedFacts, [localResult.provisionalAffirmedFact])
+              : prev.affirmedFacts,
+            observedPatterns: localResult.provisionalPattern
+              ? mergeUniqueStrings(prev.observedPatterns, [localResult.provisionalPattern])
+              : prev.observedPatterns,
+            explorableHypotheses: localResult.provisionalHypothesis
+              ? mergeUniqueStrings(prev.explorableHypotheses, [localResult.provisionalHypothesis])
+              : prev.explorableHypotheses,
             lastUpdatedAt: new Date().toISOString(),
           }));
         }
@@ -559,12 +642,14 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F7F6] text-[#18201E]">
+    <div className="min-h-screen flex flex-col bg-[#F6F7F6] dark:bg-[#0E1311] text-[#18201E] dark:text-[#EDF2EF]">
       <TopBar
         activeView={activeView}
         onChangeView={setActiveView}
         onNewSession={handleNewSession}
         onToggleMobileSidebar={() => setMobileSidebarOpen((v) => !v)}
+        resolvedTheme={resolvedTheme}
+        onToggleTheme={handleToggleTheme}
       />
 
       <div className="flex flex-1 min-h-0">
@@ -580,9 +665,10 @@ export default function App() {
           onChangeView={setActiveView}
           mobileOpen={mobileSidebarOpen}
           onCloseMobile={() => setMobileSidebarOpen(false)}
+          isOnline={isOnline}
         />
 
-        <main className="flex-1 min-w-0">
+        <main className={`flex-1 min-w-0 ${activeView !== 'conversation' ? 'pb-24' : ''}`}>
           {activeView === 'conversation' && activeSession && (
             <ConversationView
               sessionTitle={activeSession.title}
@@ -642,6 +728,8 @@ export default function App() {
           )}
         </main>
       </div>
+
+      <WhatsAppFloatingButton isOnline={isOnline} />
     </div>
   );
 }
