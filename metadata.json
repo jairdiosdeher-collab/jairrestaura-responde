@@ -1,0 +1,6 @@
+{
+  "name": "JAIRRESTAURA",
+  "description": "IA de acompañamiento psicológico personalizado para comprender patrones emocionales, mecanismos de protección y autenticidad.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
