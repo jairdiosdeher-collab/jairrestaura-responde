@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, Check, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { MICRO_INTERVENTIONS } from '../data/microinterventions';
+import { postApiJson } from '../utils/apiClient';
 import type {
   ExerciseProgressEntry,
   MicroInterventionSuggestion,
@@ -223,22 +224,24 @@ export function ExercisesView({
           pastoralIntegration
         );
       } else {
-        const res = await fetch('/api/microintervention/guide', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        const data = await postApiJson<{ reflection?: string; gentleNextStep?: string }>(
+          '/api/microintervention/guide',
+          {
             exerciseTitle: selectedTemplate.title,
             exerciseCategory: selectedTemplate.category,
             answers: filled,
             profile,
             pastoralIntegration,
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || 'No fue posible procesar el ejercicio.');
+          }
+        );
+        if (!data.reflection || typeof data.reflection !== 'string') {
+          throw new Error('La devolución recibida del servidor no tuvo un formato válido.');
         }
-        result = data;
+        result = {
+          reflection: data.reflection,
+          gentleNextStep:
+            typeof data.gentleNextStep === 'string' ? data.gentleNextStep : '',
+        };
         usedMode = 'online';
       }
 

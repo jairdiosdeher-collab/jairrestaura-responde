@@ -27,6 +27,7 @@ interface ConversationViewProps {
   onDismissReconnect: () => void;
   onSyncOfflineContextWithGemini: () => Promise<void>;
   onSendMessage: (content: string) => Promise<void>;
+  onRetryLastMessage?: () => void;
   onOpenSuggestedExercise: (exercise: MicroInterventionSuggestion) => void;
   onGoToProfile: () => void;
 }
@@ -53,6 +54,7 @@ export function ConversationView({
   onDismissReconnect,
   onSyncOfflineContextWithGemini,
   onSendMessage,
+  onRetryLastMessage,
   onOpenSuggestedExercise,
   onGoToProfile,
 }: ConversationViewProps) {
@@ -410,10 +412,31 @@ export function ConversationView({
               {errorMessage && (
                 <div
                   role="alert"
-                  className="p-4 bg-[#FEF2F2] dark:bg-[#2A1517] border border-[#FECACA] dark:border-[#6B262B] rounded-xl flex items-start gap-3 text-sm text-[#991B1B] dark:text-[#FCA5A5]"
+                  className="p-4 bg-[#FEF2F2] dark:bg-[#2A1517] border border-[#FECACA] dark:border-[#6B262B] rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-[#991B1B] dark:text-[#FCA5A5]"
                 >
-                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>{errorMessage}</span>
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <p>{errorMessage}</p>
+                      <p className="text-xs opacity-90">
+                        Tu mensaje sigue guardado en esta conversación y no se perdió.
+                      </p>
+                    </div>
+                  </div>
+                  {isOnline &&
+                    !isLoading &&
+                    onRetryLastMessage &&
+                    messages.length > 0 &&
+                    messages[messages.length - 1].role === 'user' && (
+                      <button
+                        type="button"
+                        onClick={onRetryLastMessage}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#991B1B] dark:text-[#FECACA] bg-white dark:bg-[#3A1C1F] border border-[#FECACA] dark:border-[#8C3339] hover:border-[#991B1B] dark:hover:border-[#FCA5A5] rounded-lg transition-colors whitespace-nowrap shrink-0 self-start sm:self-center"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        Reintentar
+                      </button>
+                    )}
                 </div>
               )}
             </div>

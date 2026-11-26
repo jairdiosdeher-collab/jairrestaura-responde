@@ -21,6 +21,7 @@ import {
   saveSettingsToIndexedDB,
   THEME_HINT_KEY,
 } from './storage/indexedDb';
+import { postApiJson } from './utils/apiClient';
 import type {
   AccompanimentAnalysis,
   AccompanimentSettings,
@@ -34,6 +35,26 @@ import type {
   SessionRecord,
   ThemePreference,
 } from './types/jairrestaura';
+
+interface AccompanyApiResponse {
+  reply?: string;
+  analysis?: AccompanimentAnalysis;
+  suggestedMicroIntervention?: MicroInterventionSuggestion;
+  profileUpdates?: {
+    newAffirmedFacts?: string[];
+    newObservedPatterns?: string[];
+    newExplorableHypotheses?: string[];
+    updatedUnknownAreas?: string[];
+    newProtectiveMechanisms?: {
+      behavior: string;
+      possibleFunction: string;
+      presentCost: string;
+    }[];
+    newStrengthsAndValues?: string[];
+    newPersonalGoals?: string[];
+    newCommunicationPreferences?: string[];
+  };
+}
 
 const DEFAULT_SETTINGS: AccompanimentSettings = {
   preferredStyle: 'auto',
@@ -376,23 +397,20 @@ export default function App() {
       // ONLINE PATH: Gemini API via server proxy
       setIsLoading(true);
       try {
-        const res = await fetch('/api/accompany', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: nextMessages.map((m) => ({
-              role: m.role,
-              content: m.content,
-            })),
-            profile,
-            settings,
-            profileCorrectionNote,
-          }),
+        const data = await postApiJson<AccompanyApiResponse>('/api/accompany', {
+          messages: nextMessages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          profile,
+          settings,
+          profileCorrectionNote,
         });
 
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || 'No se pudo obtener respuesta del servicio.');
+        if (!data.reply || typeof data.reply !== 'string' || !data.reply.trim()) {
+          throw new Error(
+            'El servidor respondió sin contenido válido de acompañamiento. Tu mensaje se conservó; intenta nuevamente.'
+          );
         }
 
         const assistantMsg: ChatMessage = {
@@ -467,39 +485,98 @@ export default function App() {
     [activeSession, isOnline, profile, settings]
   );
 
+  // Retry requesting a response for the latest preserved user message without duplicating it
+  const handleRetryLastMessage = useCallback(async () => {
+    if (!activeSession || !isOnline || isLoading) return;
+    const lastMsg = activeSession.messages[activeSession.messages.length - 1];
+    if (!lastMsg || lastMsg.role !== 'user') return;
+
+    const targetSessionId = activeSession.id;
+    const currentMessages = activeSession.messages;
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const data = await postApiJson<AccompanyApiResponse>('/api/accompany', {
+        messages: currentMessages.map((m) => ({
+          role: m.role,
+          content: m.content,
+        })),
+        profile,
+        settings,
+      });
+
+      if (!data.reply || typeof data.reply !== 'string' || !data.reply.trim()) {
+        throw new Error(
+          'El servidor respondió sin contenido válido de acompañamiento. Tu mensaje sigue conservado.'
+        );
+      }
+
+      const assistantMsg: ChatMessage = {
+        id: createId('msg'),
+        role: 'assistant',
+        content: data.reply,
+        timestamp: new Date().toISOString(),
+        source: 'gemini',
+        analysis: data.analysis as AccompanimentAnalysis,
+        suggestedMicroIntervention:
+          data.suggestedMicroIntervention &&
+          data.suggestedMicroIntervention.title?.trim()
+            ? (data.suggestedMicroIntervention as MicroInterventionSuggestion)
+            : undefined,
+      };
+
+      setSessions((prev) =>
+        prev.map((s) =>
+          s.id === targetSessionId
+            ? {
+                ...s,
+                updatedAt: assistantMsg.timestamp,
+                messages: [...currentMessages, assistantMsg],
+              }
+            : s
+        )
+      );
+    } catch (err: unknown) {
+      setErrorMessage(
+        err instanceof Error
+          ? err.message
+          : 'No se pudo obtener respuesta del servidor. Tu mensaje sigue guardado.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeSession, isLoading, isOnline, profile, settings]);
+
   // Explicit, user-consented synchronization when reconnecting online
   const handleSyncOfflineContextWithGemini = useCallback(async () => {
     if (!activeSession || !isOnline || isLoading) return;
-    setJustReconnected(false);
     const targetSessionId = activeSession.id;
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
-      const res = await fetch('/api/accompany', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [
-            ...activeSession.messages.map((m) => ({
-              role: m.role,
-              content: m.content,
-            })),
-            {
-              role: 'user',
-              content:
-                'Acabo de recuperar la conexión a internet y quiero continuar contigo con Gemini tomando en cuenta lo que conversé en modo local.',
-            },
-          ],
-          profile,
-          settings,
-        }),
+      const data = await postApiJson<AccompanyApiResponse>('/api/accompany', {
+        messages: [
+          ...activeSession.messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          {
+            role: 'user',
+            content:
+              'Acabo de recuperar la conexión a internet y quiero continuar contigo con Gemini tomando en cuenta lo que conversé en modo local.',
+          },
+        ],
+        profile,
+        settings,
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'No fue posible sincronizar con Gemini.');
+      if (!data.reply || typeof data.reply !== 'string' || !data.reply.trim()) {
+        throw new Error('La respuesta recibida no contiene texto de acompañamiento válido.');
       }
+
+      setJustReconnected(false);
 
       const assistantMsg: ChatMessage = {
         id: createId('msg'),
@@ -681,6 +758,7 @@ export default function App() {
               onDismissReconnect={() => setJustReconnected(false)}
               onSyncOfflineContextWithGemini={handleSyncOfflineContextWithGemini}
               onSendMessage={(text) => sendMessage(text)}
+              onRetryLastMessage={() => void handleRetryLastMessage()}
               onOpenSuggestedExercise={handleOpenSuggestedExercise}
               onGoToProfile={() => setActiveView('profile')}
             />
