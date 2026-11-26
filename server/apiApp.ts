@@ -123,25 +123,49 @@ function getGeminiClient(): GoogleGenAI {
   });
 }
 
-async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 2): Promise<T> {
+function getGeminiErrorStatus(err: unknown): number {
+  if (typeof err === 'object' && err !== null && 'status' in err) {
+    return Number((err as { status: unknown }).status) || 0;
+  }
+  return 0;
+}
+
+async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 3): Promise<T> {
   let lastError: unknown;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       return await fn();
     } catch (err: unknown) {
       lastError = err;
-      const status =
-        typeof err === 'object' && err !== null && 'status' in err
-          ? Number((err as { status: unknown }).status)
-          : 0;
+      const status = getGeminiErrorStatus(err);
       const isRetryable = status === 429 || status >= 500 || status === 0;
       if (!isRetryable || attempt === maxAttempts) {
         throw err;
       }
-      await new Promise((resolve) => setTimeout(resolve, 600 * attempt));
+      // Backoff progresivo para dar tiempo a que se recupere la capacidad de Gemini.
+      const delayMs = Math.min(8000, 1200 * 2 ** (attempt - 1));
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
   }
   throw lastError;
+}
+
+async function withModelFallback<T>(generate: (model: string) => Promise<T>): Promise<T> {
+  try {
+    return await withRetry(() => generate(MODEL_NAME));
+  } catch (primaryError: unknown) {
+    const status = getGeminiErrorStatus(primaryError);
+    // El cambio de modelo se reserva para indisponibilidad del servidor, no para errores de clave o permisos.
+    if (status < 500 || status === 429) {
+      throw primaryError;
+    }
+
+    const fallbackModel = 'gemini-3.5-flash-lite';
+    console.warn(
+      `[JAIRRESTAURA] El modelo principal ${MODEL_NAME} no está disponible (HTTP ${status}). Se intentará ${fallbackModel}.`
+    );
+    return withRetry(() => generate(fallbackModel));
+  }
 }
 
 function parseGeminiJsonResponse(rawText: string): unknown {
@@ -213,6 +237,15 @@ function formatErrorMessage(err: unknown): { status: number; message: string; co
         code: 'GEMINI_RATE_LIMIT',
         message:
           'Se alcanzó temporalmente el límite de solicitudes de Gemini. Intenta de nuevo en unos momentos.',
+      };
+    }
+
+    if (status === 503 || rawMsg.includes('UNAVAILABLE')) {
+      return {
+        status: 503,
+        code: 'GEMINI_UNAVAILABLE',
+        message:
+          'Gemini está temporalmente saturado. JAIRRESTAURA conservó tu mensaje; espera un momento e inténtalo de nuevo.',
       };
     }
 
@@ -343,9 +376,9 @@ export function createApiApp(): express.Express {
         historialReciente: recentHistory,
       };
 
-      const response = await withRetry(() =>
+      const response = await withModelFallback((model) =>
         ai.models.generateContent({
-          model: MODEL_NAME,
+          model,
           contents: `Analiza el contexto del consultante y responde al último mensaje siguiendo fielmente el Prompt Maestro de JAIRRESTAURA.\n\nCONTEXTO EN JSON:\n${JSON.stringify(contextPayload, null, 2)}`,
           config: {
             systemInstruction: MASTER_PROMPT,
@@ -522,9 +555,9 @@ export function createApiApp(): express.Express {
         integracionPastoral: Boolean(body.pastoralIntegration),
       };
 
-      const response = await withRetry(() =>
+      const response = await withModelFallback((model) =>
         ai.models.generateContent({
-          model: MODEL_NAME,
+          model,
           contents: `El consultante acaba de completar una microintervención guiada. Ofrécele una devolución breve, respetuosa, personalizada y fortalecedora (máximo 2-3 párrafos claros) que reconozca lo que observó en sí mismo, señale suavemente sus recursos personales y proponga un siguiente paso diminuto y realista.\n\nDATOS:\n${JSON.stringify(payload, null, 2)}`,
           config: {
             systemInstruction: MASTER_PROMPT,
